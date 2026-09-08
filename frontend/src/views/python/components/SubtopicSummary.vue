@@ -3,7 +3,6 @@
     <h3 class="p-2">{{ topic.title }}</h3>
 
     <div v-if="topic.summary" class="topic-summary my-2 p-2" v-html="renderedSummary"></div>
-
     <p v-else>Loading summary...</p>
 
     <div class="chat-messages my-3">
@@ -35,10 +34,10 @@
 
     <p v-if="errorMessage" class="text-danger mt-2">{{ errorMessage }}</p>
 
-    <div class="summary-actions mt-2 mb-3">
-      <button type="button" class="btn btn-danger">
+    <div class="summary-actions mt-4 mb-3">
+      <router-link class="btn btn-danger" :to="`/python/subtopic/${route.params.id}/quiz`">
         Continue to quiz
-      </button>
+      </router-link>
     </div>
   </div>
 </template>

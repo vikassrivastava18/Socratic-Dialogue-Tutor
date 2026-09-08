@@ -6,11 +6,7 @@
             </router-link>
              <router-link to="/python/topics" class="nav-link text_white px-4 py-1 me-2" :class="{ 'python-active': $route.fullPath.includes('python') }">
                 PYTHON
-            </router-link>
-            <router-link to="/sql" class="nav-link text_white px-4 py-1 me-2">
-                SQL
-            </router-link>            
-            <!-- <img src="../assets/logo.svg" width="100" alt=""> -->
+            </router-link>         
         </div>
     </nav>
 </template>
