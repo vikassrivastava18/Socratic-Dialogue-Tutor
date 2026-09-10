@@ -24,7 +24,7 @@ const routes = [
         component: () => import('./views/python/components/TopicsComponent.vue')
       },
       {
-        path: 'code',
+        path: 'subtopic/:id/code',
         component: () => import('./views/python/components/CodeComponent.vue')
       },
       {

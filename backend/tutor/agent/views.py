@@ -14,8 +14,8 @@ from .serializers import (
 )
 from .utils.agents.ask import TutorGraph
 from .utils.agents.quiz import (create_quizzes,
-                                _get_hints, 
-								_evaulate_response)
+                                get_hints, 
+								evaulate_response)
 from .utils.open_ai import llm
 
 
@@ -90,7 +90,7 @@ class QuizEvaluationView(APIView):
 				status=status.HTTP_400_BAD_REQUEST,
 			)
 
-		results, score, total = _evaulate_response(subtopic, answers)
+		results, score, total = evaulate_response(subtopic, answers)
 		response = {
 			'score': score,
 			'total': total,
@@ -98,11 +98,9 @@ class QuizEvaluationView(APIView):
 			'results': results,
 		} 
 		if not score > 7:
-			hints = _get_hints(results)
-			response["hints"] = hints
+			hints = get_hints(results)
+			response['hints'] = hints
 			return Response(response)
 		
 		return Response(response)
 
-
-	

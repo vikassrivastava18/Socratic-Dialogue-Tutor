@@ -43,7 +43,7 @@ def create_quizzes(content: str) -> QuizSchema:
     return cast(QuizSchema, response)
 
 
-def _get_hints(results):
+def get_hints(results):
     sections = []
     for category, category_results in results.items():
         category_hints = []
@@ -79,7 +79,7 @@ def _get_hints(results):
     return '\n\n'.join(sections) if sections else 'No hints available.'
 
 		
-def _answers_match(submitted_answer, expected_answer):
+def answers_match(submitted_answer, expected_answer):
     if isinstance(expected_answer, bool):
         return submitted_answer is expected_answer
     if not isinstance(submitted_answer, str) or not isinstance(expected_answer, str):
@@ -87,7 +87,7 @@ def _answers_match(submitted_answer, expected_answer):
     return submitted_answer.strip().casefold() == expected_answer.strip().casefold()
 
 
-def _evaulate_response(subtopic, answers):
+def evaulate_response(subtopic, answers):
         quizzes = subtopic.quizzes or {}
         results = {}
         score = 0
@@ -108,7 +108,7 @@ def _evaulate_response(subtopic, answers):
                     category_answers[index] if index < len(category_answers) else None
                 )
                 expected_answer = quiz.get('answer')
-                is_correct = _answers_match(
+                is_correct = answers_match(
                     submitted_answer,
                     expected_answer,
                 )
@@ -124,5 +124,4 @@ def _evaulate_response(subtopic, answers):
 
             results[category] = category_results
         return results, score, total
-
 

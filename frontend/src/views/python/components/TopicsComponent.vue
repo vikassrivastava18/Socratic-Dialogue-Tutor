@@ -42,9 +42,6 @@ onMounted(async () => {
 <style scoped>
 .theory-container {
     padding: 24px;
-    /* background: #f7f9fc;
-    border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06); */
 }
 
 h3 {
