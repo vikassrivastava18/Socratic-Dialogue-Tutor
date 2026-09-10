@@ -8,15 +8,14 @@
 
 		<form v-else @submit.prevent="submitQuiz">
 			<section v-for="section in quizSections" :key="section.key" class="mb-4">
-				<h4>{{ section.title }}</h4>
-
+				<h4>{{ section.title }}</h4>				
 				<div
 					v-for="(quiz, index) in section.items"
 					:key="quiz.id ?? `${section.key}-${index}`"
 					class="card mb-3 p-3"
 				>
 					<p><strong>{{ index + 1 }}. {{ quiz.question }}</strong></p>
-
+                    
 					<template v-if="section.key === 'mcq'">
 						<div v-for="option in quiz.options" :key="option" class="form-check">
 							<input
@@ -65,9 +64,35 @@
 		</form>
 
 		<div v-if="evaluation" class="alert alert-info mt-4" role="status">
-			{{ evaluationMessage }}
+			Submitted, your score: {{ evaluationMessage }}
+			
 		</div>
 	</div>
+
+	<!-- Modal -->
+    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content rounded-4 shadow">
+          <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel">Take hints to complete and proceed</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+
+          <div class="modal-body">
+            
+          </div>
+
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+              Close
+            </button>
+            <button type="button" class="btn btn-primary" @click="borrowBook">
+              Agree
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
 </template>
 
 <script setup>
@@ -86,13 +111,13 @@ const responses = reactive({ mcq: [], true_false: []});
 const quizSections = computed(() => [
 	{ key: "mcq", title: "Multiple Choice", items: quizzes.value.mcq || [] },
 	{ key: "true_false", title: "True / False", items: quizzes.value.true_false || [] },
-	// { key: "fill_blank", title: "Fill in the Blank", items: quizzes.value.fill_blank || [] },
 ]);
 
 const hasQuizzes = computed(() => quizSections.value.some((section) => section.items.length));
+
 const evaluationMessage = computed(() => {
 	if (typeof evaluation.value === "string") return evaluation.value;
-	return evaluation.value?.message || evaluation.value?.result || "Your answers were submitted.";
+	return evaluation.value?.message || evaluation.value?.score + '/' + evaluation.value?.total || "Your answers were submitted.";
 });
 
 function normalizeQuizResponse(data) {
@@ -122,10 +147,12 @@ async function submitQuiz() {
 		const response = await fetch(`${baseUrl}/subtopics/${route.params.id}/quizzes/evaluate/`, {
 			method: "POST",
 			headers: { "Content-Type": "application/json" },
-			body: JSON.stringify({ responses }),
+			body: JSON.stringify({ answers: { ...responses } }),
 		});
 		if (!response.ok) throw new Error(`Request failed with status ${response.status}`);
+				
 		evaluation.value = await response.json();
+		console.log("Response: ", evaluation.value);
 	} catch (error) {
 		errorMessage.value = "Unable to submit your answers. Please try again.";
 		console.error("Failed to evaluate quiz:", error);

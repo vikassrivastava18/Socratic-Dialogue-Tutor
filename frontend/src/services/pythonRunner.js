@@ -10,13 +10,13 @@ export async function initializePython() {
       createPyodideModule,
     });
   }
-
-  return pyodide;
+  // return pyodide;
 }
 
 export async function runPython(code) {
-  const python = await initializePython();
-
+  // const python = await initializePython();
+  const python = pyodide
+  
   const wrappedCode = `
   import sys
   from io import StringIO

@@ -1,17 +1,21 @@
 <template>
     <div class="container my-2 p-2">
-        <h3> 
-            <img src="../../../assets/snake_svg.svg" 
-            width="50" 
-            alt="snake logo for Python">&nbsp;&nbsp;
+        <h3>
+            <img src="../../../assets/snake_svg.svg" width="50" alt="snake logo for Python">&nbsp;&nbsp;
             Topics
         </h3>
-            <div v-for="topic in topics" :key="topic.id">                
+        <div v-for="topic in topics" :key="topic.id">
+            <div class="card" style="width: 18rem;">
                 <router-link class="topic-link" :to="`/python/topic-summary/${topic.id}`">
-                    #{{ topic.title }}
+
+                    <img src="../../../assets/regex.jpg" class="card-img-top" alt="...">
+                    <div class="card-body">
+                        <p class="card-text">{{ topic.title }}</p>
+                    </div>
                 </router-link>
             </div>
         </div>
+    </div>
 </template>
 
 <script setup>
@@ -47,6 +51,7 @@ h3 {
     margin: 0 0 16px;
     /* font-size: 1.5rem; */
     color: maroon;
+    /* text-align: center; */
 }
 
 .theory-iframe {

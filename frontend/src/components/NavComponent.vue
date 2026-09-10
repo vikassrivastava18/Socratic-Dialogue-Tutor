@@ -12,33 +12,33 @@
 </template>
 
 <style scoped>
-nav {
-    text-align: left;
-    border: 1px dotted grey;
-    border-radius: 5px;
-    /* background: linear-gradient(90deg, #dcdfe2 0%, #5e98cb 50%, #3f82bd 100%); */
-}
+    nav {
+        text-align: left;
+        border: 1px dotted grey;
+        border-radius: 5px;
+        /* background: linear-gradient(90deg, #dcdfe2 0%, #435260 50%, #1b2e3f 100%); */
+    }
 
-.nav-link {
-    margin-right: 10px;
-    font-size: large;
-    color: #000;
-}
+    .nav-link {
+        margin-right: 10px;
+        font-size: large;
+        color: #000;
+    }
 
-.router-link-exact-active, .router-link-active, .python-active {
-    background-color: #7ef473;
-    border: none;
-    color: #000;
-}
+    .router-link-exact-active, .router-link-active, .python-active {
+        background-color: #7ef473;
+        border: none;
+        color: #000;
+    }
 
-.text_white {
-    color: #000;
-}
+    .text_white {
+        color: #000;
+    }
 
-.navbar {
-    color: #000;
-}
-img {
-    float: right;
-}
+    .navbar {
+        color: #000;
+    }
+    img {
+        float: right;
+    }
 </style>

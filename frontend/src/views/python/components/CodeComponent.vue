@@ -30,13 +30,13 @@
               @keydown.tab.prevent="insertIndentation"
             ></textarea>
 
-            <div class="d-flex align-items-center mt-3 gap-3">
+            <div class="d-flex align-items-end mt-3 gap-3">
               <button
                 class="btn btn-primary"
                 @click="executeCode"
                 :disabled="loading"
               >
-                {{ loading ? "Running..." : "Run Python" }}
+                {{ loading ? "Loading..." : "Run Python" }}
               </button>
 
               <div
@@ -79,17 +79,18 @@
 
 <script setup>
 import { computed, onMounted, ref } from "vue";
-import { runPython } from "../../../services/pythonRunner";
+import { runPython, initializePython } from "../../../services/pythonRunner";
 import { baseUrl } from "../../../config";
 
 const question = ref("");
 const code = ref("");
 const output = ref("");
 const expectedAnswer = ref("");
-const loading = ref(false);
+const loading = ref(true);
 
 onMounted(async () => {
   try {
+    await initializePython()
     const response = await fetch(`${baseUrl}/code-snippets/1`);
 
     if (!response.ok) {
@@ -103,7 +104,10 @@ onMounted(async () => {
     expectedAnswer.value = String(snippet.expected_answer);
   } catch (error) {
     console.error("Failed to load code snippet:", error);
+  } finally {
+    loading.value = false
   }
+
 });
 
 async function executeCode() {
