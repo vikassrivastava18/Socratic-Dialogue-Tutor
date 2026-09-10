@@ -1,32 +1,16 @@
 from typing import Optional
-
 from dotenv import load_dotenv
 import os
 
-from langchain_openai import ChatOpenAI
 from langchain_core.messages import AIMessage, HumanMessage, SystemMessage
 from langgraph.checkpoint.memory import InMemorySaver
 from langgraph.graph import END, START, MessagesState, StateGraph
 
+from agent.utils.open_ai import llm
+
 load_dotenv(override=True)
 checkpointer = InMemorySaver()
 
-openai_key = os.getenv("OPENAI_KEY")
-
-llm = ChatOpenAI(
-    model="gpt-4o-mini",
-    api_key=openai_key,
-    temperature=0.2,
-    max_tokens=None,
-    max_retries=2,
-)
-llm2 = ChatOpenAI(
-    model="gpt-4.1-nano",
-    api_key=openai_key,
-    temperature=0.2,
-    max_tokens=None,
-    max_retries=2,
-)
 
 
 class TutorState(MessagesState):
