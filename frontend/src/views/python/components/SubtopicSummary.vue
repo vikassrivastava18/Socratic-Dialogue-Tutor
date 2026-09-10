@@ -2,7 +2,14 @@
   <div class="container summary-container">
     <h3 class="p-2">{{ topic.title }}</h3>
 
-    <div v-if="topic.summary" class="topic-summary my-2 p-2" v-html="renderedSummary"></div>
+    <div v-if="topic.summary" class="summary-pages my-2">
+      <section
+        v-for="(page, index) in summaryPages"
+        :key="index"
+        class="topic-summary summary-page p-3"
+        v-html="page"
+      ></section>
+    </div>
     <p v-else>Loading summary...</p>
 
     <div class="chat-messages my-3">
@@ -56,9 +63,16 @@ const threadId = ref(null);
 const isLoading = ref(false);
 const errorMessage = ref("");
 
-const renderedSummary = computed(() =>
-  marked.parse(topic.value.summary || "")
-);
+const summaryPages = computed(() => {
+  const content = String(topic.value.summary || "").trim();
+  const sections = content.split(/\n\s*\n/).filter(Boolean);
+  const midpoint = Math.ceil(sections.length / 2);
+
+  return [
+    marked.parse(sections.slice(0, midpoint).join("\n\n")),
+    marked.parse(sections.slice(midpoint).join("\n\n")),
+  ];
+});
 
 async function sendQuery() {
   const query = userQuery.value.trim();
@@ -129,6 +143,25 @@ onMounted(async () => {
 <style scoped>
 .topic-summary {
   line-height: 1.7;
+}
+
+.summary-pages {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.summary-page {
+  min-height: 360px;
+  border: 1px solid #dee2e6;
+  border-radius: 0.25rem;
+  background: #fff;
+}
+
+@media (max-width: 768px) {
+  .summary-pages {
+    grid-template-columns: 1fr;
+  }
 }
 
 h3 {

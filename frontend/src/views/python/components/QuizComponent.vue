@@ -7,14 +7,16 @@
 		<p v-else-if="!hasQuizzes">No quizzes are available for this subtopic.</p>
 
 		<form v-else @submit.prevent="submitQuiz">
-			<section v-for="section in quizSections" :key="section.key" class="mb-4">
-				<h4>{{ section.title }}</h4>				
-				<div
-					v-for="(quiz, index) in section.items"
-					:key="quiz.id ?? `${section.key}-${index}`"
-					class="card mb-3 p-3"
-				>
-					<p><strong>{{ index + 1 }}. {{ quiz.question }}</strong></p>
+			
+			<div class="row">
+				<section v-for="section in quizSections" :key="section.key" class="col-md-6 mb-4">
+					<h4>{{ section.title }}</h4>
+					<div
+						v-for="(quiz, index) in section.items"
+						:key="quiz.id ?? `${section.key}-${index}`"
+						class="card mb-3 p-3"
+					>
+						<p><strong>{{ index + 1 }}. {{ quiz.question }}</strong></p>
                     
 					<template v-if="section.key === 'mcq'">
 						<div v-for="option in quiz.options" :key="option" class="form-check">
@@ -55,8 +57,9 @@
 						type="text"
 						placeholder="Enter answer"
 					/>
-				</div>
-			</section>
+					</div>
+				</section>
+			</div>
 
 			<button class="btn btn-primary" type="submit" :disabled="isSubmitting">
 				{{ isSubmitting ? 'Submitting...' : 'Submit Answers' }}
