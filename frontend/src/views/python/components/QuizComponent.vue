@@ -162,4 +162,9 @@ onMounted(loadQuizzes);
 h3 {
 	color: maroon;
 }
+
+.modal-dialog {
+	max-width: 900px;
+	width: min(90vw, 900px);
+}
 </style>

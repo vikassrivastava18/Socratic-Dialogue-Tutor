@@ -1,7 +1,7 @@
 <template>
     <div class="container my-2 p-2">
         <h3>
-            <img src="../../../assets/snake_svg.svg" width="50" alt="snake logo for Python">&nbsp;&nbsp;
+            <img src="../../../assets/snake_svg.svg" width="50" alt="snake logo for Python">&nbsp;
             Topics
         </h3>
         <div v-for="topic in topics" :key="topic.id">
