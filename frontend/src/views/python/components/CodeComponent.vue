@@ -18,11 +18,12 @@
         <!-- Code row -->
         <div class="card mb-4">
           <div class="card-header">
-            Your Code
+            Write Your Code
           </div>
           <div class="card-body">
             <textarea
               v-model="code"
+              id="codeArea"
               class="form-control"
               rows="10"
               @paste.prevent
@@ -146,3 +147,8 @@ function insertIndentation(event) {
 }
 </script>
 
+<style>
+#codeArea {
+  border: 1px dotted maroon;
+}
+</style>

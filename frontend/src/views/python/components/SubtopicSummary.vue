@@ -70,6 +70,7 @@ const summaryPages = computed(() => {
 
   return [
     marked.parse(sections.slice(0, midpoint).join("\n\n")),
+    
     marked.parse(sections.slice(midpoint).join("\n\n")),
   ];
 });
@@ -175,5 +176,9 @@ h3 {
 }
 .summary-actions {
     text-align: center;
+}
+
+input {
+  border: 1px dotted;
 }
 </style>

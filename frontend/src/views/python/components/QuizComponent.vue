@@ -50,7 +50,9 @@
 
 		<div v-if="evaluation" class="alert alert-info mt-4" role="status">
 			Submitted, your score: {{ evaluationMessage }}
-
+			<router-link v-if="!hints" class="btn btn-danger" :to="`/python/subtopic/${route.params.id}/code`">
+				Continue to code
+			</router-link>
 		</div>
 	</div>
 
