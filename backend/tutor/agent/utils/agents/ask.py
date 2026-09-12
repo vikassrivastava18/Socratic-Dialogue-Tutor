@@ -1,6 +1,5 @@
 from typing import Optional
 from dotenv import load_dotenv
-import os
 
 from langchain_core.messages import AIMessage, HumanMessage, SystemMessage
 from langgraph.checkpoint.memory import InMemorySaver
@@ -41,7 +40,6 @@ class TutorGraph:
             *previous_messages,
             HumanMessage(content=state["query"]),
         ]
-
         response = self.llm.invoke(messages)
 
         return {
