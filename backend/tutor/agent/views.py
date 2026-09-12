@@ -12,11 +12,12 @@ from .serializers import (
 	TopicDetailSerializer,
 	TopicSerializer,
 )
-from .utils.agents.ask import TutorGraph
-from .utils.agents.quiz import (create_quizzes,
+from .utils.ask import TutorGraph
+from .utils.code import create_coding_problems
+from .utils.quiz import (create_quizzes,
                                 get_hints, 
 								evaulate_response)
-from .utils.agents.open_ai import llm
+from .utils.open_ai import llm
 
 
 def _call_llm(prompt):
@@ -42,6 +43,12 @@ class QuizListView(APIView):
 	def get(self, request, subtopic_id):
 		subtopic = get_object_or_404(SubTopic, pk=subtopic_id)
 		return Response(subtopic.quizzes or {})
+
+
+class CodingProblemListView(APIView):
+	def get(self, request, subtopic_id):
+		subtopic = get_object_or_404(SubTopic, pk=subtopic_id)
+		return Response(subtopic.codes or {})
 
 
 class CodeSnippetDetailView(generics.RetrieveAPIView):
@@ -78,6 +85,14 @@ class QuizCreateView(APIView):
 		subtopic = get_object_or_404(SubTopic, pk=subtopic_id)
 		quizzes = create_quizzes(subtopic.summary)
 		return Response(quizzes.model_dump())
+
+
+class CodingProblemCreateView(APIView):
+	def post(self, request, subtopic_id):
+		subtopic = get_object_or_404(SubTopic, pk=subtopic_id)
+		codes = create_coding_problems(subtopic.summary).model_dump()
+		SubTopic.objects.filter(pk=subtopic.pk).update(codes=codes)
+		return Response(codes)
 
 
 class QuizEvaluationView(APIView):

@@ -1,5 +1,6 @@
 from pydantic import BaseModel
 
+
 class MCQ(BaseModel):
     question: str
     options: list[str]
@@ -19,3 +20,11 @@ class QuizSchema(BaseModel):
     mcq: list[MCQ]
     true_false: list[TrueFalse]
     fill_blank: list[FillBlank]
+
+class CodeSchema(BaseModel):
+    problem: str
+    code: str
+    answer: str
+
+class CodeListSchema(BaseModel):
+    codes: list[CodeSchema]

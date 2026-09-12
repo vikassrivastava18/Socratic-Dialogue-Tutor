@@ -47,6 +47,14 @@
               >
                 {{ answerMatches ? "Correct answer" : "Answers do not match" }}
               </div>
+
+              <button
+                v-if="answerMatches && hasNextProblem"
+                class="btn btn-success"
+                @click="loadNextProblem"
+              >
+                Next problem
+              </button>
             </div>
 
             <h5 class="mt-4">Your Output</h5>
@@ -80,29 +88,50 @@
 
 <script setup>
 import { computed, onMounted, ref } from "vue";
+import { useRoute } from "vue-router";
 import { runPython, initializePython } from "../../../services/pythonRunner";
 import { baseUrl } from "../../../config";
 
+const route = useRoute();
 const question = ref("");
 const code = ref("");
 const output = ref("");
 const expectedAnswer = ref("");
 const loading = ref(true);
+const codingProblems = ref([]);
+const currentProblemIndex = ref(0);
+
+const hasNextProblem = computed(
+  () => currentProblemIndex.value < codingProblems.value.length - 1
+);
+
+function loadProblem(problem) {
+  question.value = problem.problem;
+  code.value = problem.code;
+  expectedAnswer.value = String(problem.answer);
+  output.value = "";
+}
 
 onMounted(async () => {
   try {
     await initializePython()
-    const response = await fetch(`${baseUrl}/code-snippets/1`);
+    const response = await fetch(
+      `${baseUrl}/subtopics/${route.params.id}/coding-problems/`
+    );
 
     if (!response.ok) {
       throw new Error(`Request failed with status ${response.status}`);
     }
 
-    const snippet = await response.json();
+    const data = await response.json();
+    codingProblems.value = data.codes || [];
+    const problem = codingProblems.value[0];
 
-    question.value = snippet.question;
-    code.value = snippet.snippet;
-    expectedAnswer.value = String(snippet.expected_answer);
+    if (!problem) {
+      throw new Error("No coding problems were returned");
+    }
+
+    loadProblem(problem);
   } catch (error) {
     console.error("Failed to load code snippet:", error);
   } finally {
@@ -110,6 +139,15 @@ onMounted(async () => {
   }
 
 });
+
+function loadNextProblem() {
+  if (!hasNextProblem.value) {
+    return;
+  }
+
+  currentProblemIndex.value += 1;
+  loadProblem(codingProblems.value[currentProblemIndex.value]);
+}
 
 async function executeCode() {
   loading.value = true;

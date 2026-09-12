@@ -1,25 +1,13 @@
-import os
 
 from dotenv import load_dotenv
-from langchain_openai import ChatOpenAI
-from pydantic import SecretStr
 from typing import cast
 from rest_framework import  status
 from rest_framework.response import Response
 
 from .schemas import QuizSchema
-
+from .open_ai import llm
 
 load_dotenv(override=True)
-
-openai_key = os.getenv("OPENAI_KEY")
-
-llm = ChatOpenAI(
-    model="gpt-4o-mini",
-    api_key=SecretStr(openai_key) if openai_key else None,
-    temperature=0.2,
-    max_retries=2,
-)
 
 
 def create_quizzes(content: str) -> QuizSchema:
@@ -30,7 +18,6 @@ def create_quizzes(content: str) -> QuizSchema:
 
     Content: {content}
     """
-
     structured_llm = llm.with_structured_output(QuizSchema)
     messages = [
         {

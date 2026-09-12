@@ -1,7 +1,10 @@
 from django.urls import reverse
+from unittest.mock import patch
+
 from rest_framework.test import APITestCase
 
 from .models import Course, SubTopic, Topic
+from .utils.schemas import CodeListSchema, CodeSchema
 
 
 class QuizListViewTests(APITestCase):
@@ -103,3 +106,98 @@ class QuizEvaluationViewTests(APITestCase):
 		)
 
 		self.assertEqual(response.status_code, 400)
+
+
+class CodingProblemCreateViewTests(APITestCase):
+	def setUp(self):
+		course = Course.objects.create(name='CS50')
+		topic = Topic.objects.create(
+			title='Python',
+			course=course,
+			summary='Python fundamentals',
+		)
+		self.subtopic = SubTopic.objects.create(
+			topic=topic,
+			title='Functions',
+			summary='Function fundamentals',
+		)
+
+	@patch('agent.views.create_coding_problems')
+	def test_creates_and_saves_coding_problems(self, create_coding_problems):
+		created_codes = CodeListSchema(codes=[CodeSchema(
+			problem='Write a greeting function.',
+			code='def greet(): pass',
+			answer='def greet(): pass',
+		)])
+		create_coding_problems.return_value = created_codes
+
+		response = self.client.post(
+			reverse(
+				'subtopic-coding-problems',
+				kwargs={'subtopic_id': self.subtopic.pk},
+			),
+			format='json',
+		)
+
+		self.assertEqual(response.status_code, 200)
+		self.assertEqual(response.json(), created_codes.model_dump())
+		self.subtopic.refresh_from_db()
+		self.assertEqual(self.subtopic.codes, created_codes.model_dump())
+		create_coding_problems.assert_called_once_with(self.subtopic.summary)
+
+
+class CodingProblemListViewTests(APITestCase):
+	def setUp(self):
+		course = Course.objects.create(name='CS50')
+		topic = Topic.objects.create(
+			title='Python',
+			course=course,
+			summary='Python fundamentals',
+		)
+		self.subtopic = SubTopic.objects.create(
+			topic=topic,
+			title='Functions',
+			summary='Function fundamentals',
+			codes={
+				'codes': [{
+					'problem': 'Write a greeting function.',
+					'code': 'def greet(): pass',
+					'answer': 'def greet(): pass',
+				}],
+			},
+		)
+
+	def test_returns_subtopic_coding_problems(self):
+		response = self.client.get(
+			reverse(
+				'subtopic-coding-problems-list',
+				kwargs={'subtopic_id': self.subtopic.pk},
+			)
+		)
+
+		self.assertEqual(response.status_code, 200)
+		self.assertEqual(response.json(), self.subtopic.codes)
+
+	def test_returns_empty_object_when_subtopic_has_no_coding_problems(self):
+		self.subtopic.codes = None
+		self.subtopic.save(update_fields=('codes',))
+
+		response = self.client.get(
+			reverse(
+				'subtopic-coding-problems-list',
+				kwargs={'subtopic_id': self.subtopic.pk},
+			)
+		)
+
+		self.assertEqual(response.status_code, 200)
+		self.assertEqual(response.json(), {})
+
+	def test_returns_not_found_for_unknown_subtopic(self):
+		response = self.client.get(
+			reverse(
+				'subtopic-coding-problems-list',
+				kwargs={'subtopic_id': 9999},
+			)
+		)
+
+		self.assertEqual(response.status_code, 404)

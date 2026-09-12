@@ -5,7 +5,7 @@ from langchain_core.messages import AIMessage, HumanMessage, SystemMessage
 from langgraph.checkpoint.memory import InMemorySaver
 from langgraph.graph import END, START, MessagesState, StateGraph
 
-from agent.utils.agents.open_ai import llm
+from .open_ai import llm
 
 load_dotenv(override=True)
 checkpointer = InMemorySaver()
