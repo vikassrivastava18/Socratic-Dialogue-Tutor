@@ -1,6 +1,7 @@
 from django.urls import reverse
 from unittest.mock import patch
 
+from django.contrib.auth import get_user_model
 from rest_framework.test import APITestCase
 
 from .models import Course, SubTopic, Topic
@@ -110,6 +111,11 @@ class QuizEvaluationViewTests(APITestCase):
 
 class CodingProblemCreateViewTests(APITestCase):
 	def setUp(self):
+		self.staff_user = get_user_model().objects.create_user(
+			username='staff',
+			password='password',
+			is_staff=True,
+		)
 		course = Course.objects.create(name='CS50')
 		topic = Topic.objects.create(
 			title='Python',
@@ -122,8 +128,9 @@ class CodingProblemCreateViewTests(APITestCase):
 			summary='Function fundamentals',
 		)
 
-	@patch('app.views.create_coding_problems')
+	@patch('staff.views.create_coding_problems')
 	def test_creates_and_saves_coding_problems(self, create_coding_problems):
+		self.client.login(username='staff', password='password')
 		created_codes = CodeListSchema(codes=[CodeSchema(
 			problem='Write a greeting function.',
 			code='def greet(): pass',
@@ -145,9 +152,25 @@ class CodingProblemCreateViewTests(APITestCase):
 		self.assertEqual(self.subtopic.codes, created_codes.model_dump())
 		create_coding_problems.assert_called_once_with(self.subtopic.summary)
 
+	def test_rejects_non_staff_access(self):
+		response = self.client.post(
+			reverse(
+				'subtopic-coding-problems',
+				kwargs={'subtopic_id': self.subtopic.pk},
+			),
+			format='json',
+		)
+
+		self.assertEqual(response.status_code, 403)
+
 
 class CodingProblemListViewTests(APITestCase):
 	def setUp(self):
+		self.staff_user = get_user_model().objects.create_user(
+			username='staff',
+			password='password',
+			is_staff=True,
+		)
 		course = Course.objects.create(name='CS50')
 		topic = Topic.objects.create(
 			title='Python',
@@ -168,6 +191,7 @@ class CodingProblemListViewTests(APITestCase):
 		)
 
 	def test_returns_subtopic_coding_problems(self):
+		self.client.login(username='staff', password='password')
 		next_subtopic = SubTopic.objects.create(
 			topic=self.subtopic.topic,
 			title='Loops',
@@ -187,6 +211,7 @@ class CodingProblemListViewTests(APITestCase):
 		})
 
 	def test_returns_empty_object_when_subtopic_has_no_coding_problems(self):
+		self.client.login(username='staff', password='password')
 		self.subtopic.codes = None
 		self.subtopic.save(update_fields=('codes',))
 
@@ -201,6 +226,7 @@ class CodingProblemListViewTests(APITestCase):
 		self.assertEqual(response.json(), {'codes': {}, 'next_id': None})
 
 	def test_returns_not_found_for_unknown_subtopic(self):
+		self.client.login(username='staff', password='password')
 		response = self.client.get(
 			reverse(
 				'subtopic-coding-problems-list',
@@ -209,3 +235,13 @@ class CodingProblemListViewTests(APITestCase):
 		)
 
 		self.assertEqual(response.status_code, 404)
+
+	def test_rejects_non_staff_access(self):
+		response = self.client.get(
+			reverse(
+				'subtopic-coding-problems-list',
+				kwargs={'subtopic_id': self.subtopic.pk},
+			)
+		)
+
+		self.assertEqual(response.status_code, 403)

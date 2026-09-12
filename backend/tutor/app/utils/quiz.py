@@ -10,25 +10,6 @@ from .open_ai import llm
 load_dotenv(override=True)
 
 
-def create_quizzes(content: str) -> QuizSchema:
-    prompt = f"""
-    You are a quiz master. Use the content of a chapter to create quizzes that help students in their study.
-    For MCQ, only one option should be correct.
-    Return the response in the format specified.    
-
-    Content: {content}
-    """
-    structured_llm = llm.with_structured_output(QuizSchema)
-    messages = [
-        {
-            "role": "system",
-            "content": prompt
-        }
-    ]
-
-    response = structured_llm.invoke(messages)
-    return cast(QuizSchema, response)
-
 
 def get_hints(results):
     sections = []

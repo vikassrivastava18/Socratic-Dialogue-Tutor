@@ -2,20 +2,18 @@ from uuid import uuid4
 
 from django.shortcuts import get_object_or_404
 from rest_framework import generics, status
+from rest_framework.permissions import IsAdminUser
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from .models import CodeSnippet, SubTopic, Topic
+from .models import SubTopic, Topic
 from .serializers import (
-	CodeSnippetSerializer,
 	SubTopicSerializer,
 	TopicDetailSerializer,
 	TopicSerializer,
 )
 from .utils.ask import TutorGraph
-from .utils.code import create_coding_problems
-from .utils.quiz import (create_quizzes,
-                        get_hints, 
+from .utils.quiz import (get_hints, 
 						evaulate_response)
 from .utils.open_ai import llm
 
@@ -63,13 +61,9 @@ class ChatQueryView(APIView):
 		})
 
 
-class QuizListView(APIView):
-	def get(self, request, subtopic_id):
-		subtopic = get_object_or_404(SubTopic, pk=subtopic_id)
-		return Response(subtopic.quizzes or {})
-
-
 class CodingProblemListView(APIView):
+	permission_classes = (IsAdminUser,)
+
 	def get(self, request, subtopic_id):
 		subtopic = get_object_or_404(SubTopic, pk=subtopic_id)
 		next_subtopic = (
@@ -84,25 +78,11 @@ class CodingProblemListView(APIView):
 		})
 
 
-class CodeSnippetDetailView(generics.RetrieveAPIView):
-	queryset = CodeSnippet.objects.all()
-	serializer_class = CodeSnippetSerializer
-
-
-class CodingProblemCreateView(APIView):
-	def post(self, request, subtopic_id):
+class QuizListView(APIView):
+	def get(self, request, subtopic_id):
 		subtopic = get_object_or_404(SubTopic, pk=subtopic_id)
-		codes = create_coding_problems(subtopic.summary).model_dump()
-		SubTopic.objects.filter(pk=subtopic.pk).update(codes=codes)
-		return Response(codes)
-
-
-class QuizCreateView(APIView):
-	def post(self, request, subtopic_id):
-		subtopic = get_object_or_404(SubTopic, pk=subtopic_id)
-		quizzes = create_quizzes(subtopic.summary)
-		return Response(quizzes.model_dump())
-
+		return Response(subtopic.quizzes or {})
+	
 
 class QuizEvaluationView(APIView):
 	def post(self, request, subtopic_id):
