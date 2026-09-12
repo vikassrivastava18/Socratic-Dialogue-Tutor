@@ -15,8 +15,8 @@ from .serializers import (
 from .utils.ask import TutorGraph
 from .utils.code import create_coding_problems
 from .utils.quiz import (create_quizzes,
-                                get_hints, 
-								evaulate_response)
+                        get_hints, 
+						evaulate_response)
 from .utils.open_ai import llm
 
 
@@ -37,23 +37,6 @@ class TopicDetailView(generics.RetrieveAPIView):
 class SubTopicDetailView(generics.RetrieveAPIView):
 	queryset = SubTopic.objects.all()
 	serializer_class = SubTopicSerializer
-
-
-class QuizListView(APIView):
-	def get(self, request, subtopic_id):
-		subtopic = get_object_or_404(SubTopic, pk=subtopic_id)
-		return Response(subtopic.quizzes or {})
-
-
-class CodingProblemListView(APIView):
-	def get(self, request, subtopic_id):
-		subtopic = get_object_or_404(SubTopic, pk=subtopic_id)
-		return Response(subtopic.codes or {})
-
-
-class CodeSnippetDetailView(generics.RetrieveAPIView):
-	queryset = CodeSnippet.objects.all()
-	serializer_class = CodeSnippetSerializer
 
 
 class ChatQueryView(APIView):
@@ -80,11 +63,30 @@ class ChatQueryView(APIView):
 		})
 
 
-class QuizCreateView(APIView):
-	def post(self, request, subtopic_id):
+class QuizListView(APIView):
+	def get(self, request, subtopic_id):
 		subtopic = get_object_or_404(SubTopic, pk=subtopic_id)
-		quizzes = create_quizzes(subtopic.summary)
-		return Response(quizzes.model_dump())
+		return Response(subtopic.quizzes or {})
+
+
+class CodingProblemListView(APIView):
+	def get(self, request, subtopic_id):
+		subtopic = get_object_or_404(SubTopic, pk=subtopic_id)
+		next_subtopic = (
+			SubTopic.objects
+			.filter(topic=subtopic.topic, pk__gt=subtopic.pk)
+			.order_by('pk')
+			.first()
+		)
+		return Response({
+			'codes': subtopic.codes or {},
+			'next_id': next_subtopic.pk if next_subtopic else None,
+		})
+
+
+class CodeSnippetDetailView(generics.RetrieveAPIView):
+	queryset = CodeSnippet.objects.all()
+	serializer_class = CodeSnippetSerializer
 
 
 class CodingProblemCreateView(APIView):
@@ -93,6 +95,13 @@ class CodingProblemCreateView(APIView):
 		codes = create_coding_problems(subtopic.summary).model_dump()
 		SubTopic.objects.filter(pk=subtopic.pk).update(codes=codes)
 		return Response(codes)
+
+
+class QuizCreateView(APIView):
+	def post(self, request, subtopic_id):
+		subtopic = get_object_or_404(SubTopic, pk=subtopic_id)
+		quizzes = create_quizzes(subtopic.summary)
+		return Response(quizzes.model_dump())
 
 
 class QuizEvaluationView(APIView):
@@ -112,10 +121,9 @@ class QuizEvaluationView(APIView):
 			'percentage': round(score / total * 100, 2) if total else 0,
 			'results': results,
 		} 
-		if not score > 7:
+		if not round(score / total * 100, 2) > 70:
 			hints = get_hints(results)
 			response['hints'] = hints
 			return Response(response)
 		
 		return Response(response)
-

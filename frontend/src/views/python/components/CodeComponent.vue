@@ -17,8 +17,15 @@
       <div class="col-md-7 coding-column">
         <!-- Code row -->
         <div class="card mb-4">
-          <div class="card-header">
+          <div class="card-header d-flex justify-content-between align-items-center">
             Write Your Code
+            <router-link
+              v-if="answerMatches && !hasNextProblem && nextTopicId"
+              class="btn btn-success btn-sm"
+              :to="`/python/subtopic/${nextTopicId}/summary`"
+            >
+              Next topic
+            </router-link>
           </div>
           <div class="card-body">
             <textarea
@@ -100,6 +107,7 @@ const expectedAnswer = ref("");
 const loading = ref(true);
 const codingProblems = ref([]);
 const currentProblemIndex = ref(0);
+const nextTopicId = ref(null);
 
 const hasNextProblem = computed(
   () => currentProblemIndex.value < codingProblems.value.length - 1
@@ -124,7 +132,8 @@ onMounted(async () => {
     }
 
     const data = await response.json();
-    codingProblems.value = data.codes || [];
+    codingProblems.value = data.codes.codes || [];
+    nextTopicId.value = data.next_id;
     const problem = codingProblems.value[0];
 
     if (!problem) {

@@ -168,6 +168,11 @@ class CodingProblemListViewTests(APITestCase):
 		)
 
 	def test_returns_subtopic_coding_problems(self):
+		next_subtopic = SubTopic.objects.create(
+			topic=self.subtopic.topic,
+			title='Loops',
+			summary='Loop fundamentals',
+		)
 		response = self.client.get(
 			reverse(
 				'subtopic-coding-problems-list',
@@ -176,7 +181,10 @@ class CodingProblemListViewTests(APITestCase):
 		)
 
 		self.assertEqual(response.status_code, 200)
-		self.assertEqual(response.json(), self.subtopic.codes)
+		self.assertEqual(response.json(), {
+			'codes': self.subtopic.codes,
+			'next_id': next_subtopic.pk,
+		})
 
 	def test_returns_empty_object_when_subtopic_has_no_coding_problems(self):
 		self.subtopic.codes = None
@@ -190,7 +198,7 @@ class CodingProblemListViewTests(APITestCase):
 		)
 
 		self.assertEqual(response.status_code, 200)
-		self.assertEqual(response.json(), {})
+		self.assertEqual(response.json(), {'codes': {}, 'next_id': None})
 
 	def test_returns_not_found_for_unknown_subtopic(self):
 		response = self.client.get(
