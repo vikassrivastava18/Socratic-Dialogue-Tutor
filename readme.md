@@ -1,5 +1,5 @@
 
-<img src="assets/tutor_new.png" alt="Socratic Dialogue Tutor" width="700"/>
+<img src="assets/tutor_new.png" alt="Socratic Dialogue Tutor">
 
 ## Key features
 - RAG based document answering functionality using FAISS and LangChain.
