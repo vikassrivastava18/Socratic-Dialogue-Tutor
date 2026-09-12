@@ -6,11 +6,10 @@ from langchain_core.messages import AIMessage, HumanMessage, SystemMessage
 from langgraph.checkpoint.memory import InMemorySaver
 from langgraph.graph import END, START, MessagesState, StateGraph
 
-from agent.utils.open_ai import llm
+from agent.utils.agents.open_ai import llm
 
 load_dotenv(override=True)
 checkpointer = InMemorySaver()
-
 
 
 class TutorState(MessagesState):
@@ -20,17 +19,17 @@ class TutorState(MessagesState):
 
 
 class TutorGraph:
-    def __init__(self):
+    def __init__(self, topic=None):
         self.llm = llm
-
+        self.topic = topic
         self.checkpointer = InMemorySaver()
         self.graph = self._build_graph()
 
     def answer_query(self, state: TutorState) -> dict:
         previous_messages = state.get("messages", [])[-10:]
 
-        system_prompt = """You are a CS tutor.
-        Help the user understand Regex.
+        system_prompt = f"""You are a CS tutor.
+        Help the user understand {self.topic}. Do not answer on a topic not relevant to this.
         Use the supplied context if it is relevant.
         """
 
@@ -69,9 +68,8 @@ class TutorGraph:
         thread_id: str = "default",
     ) -> dict:
         return self.graph.invoke(
-            {
-                "query": query,
-                "context": context,
+            {"query": query,
+            "context": context,
             },
             config={
                 "configurable": {

@@ -2,7 +2,6 @@ import os
 
 from langchain_openai import ChatOpenAI
 
-
 openai_key = os.getenv("OPENAI_KEY")
 
 llm = ChatOpenAI(

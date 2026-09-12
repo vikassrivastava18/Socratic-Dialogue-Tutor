@@ -16,7 +16,7 @@ from .utils.agents.ask import TutorGraph
 from .utils.agents.quiz import (create_quizzes,
                                 get_hints, 
 								evaulate_response)
-from .utils.open_ai import llm
+from .utils.agents.open_ai import llm
 
 
 def _call_llm(prompt):
@@ -60,7 +60,7 @@ class ChatQueryView(APIView):
 
 		subtopic = get_object_or_404(SubTopic, pk=subtopic_id)
 		thread_id = request.data.get('thread_id') or str(uuid4())
-		topic_graph = TutorGraph()
+		topic_graph = TutorGraph(subtopic.title)
 		result = topic_graph.invoke(
 			query=query,
 			context=subtopic.summary,

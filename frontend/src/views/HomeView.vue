@@ -20,7 +20,7 @@
 
           <!-- Paragraph -->
           <p class="text-secondary fs-5 lh-lg mb-4">
-            <i>Tutor</i> is an artificial intelligence powered educational application designed to support student
+            <i>Tutor</i> is an AI powered educational playground designed to support student
             learning. Through a <i>Socratic</i> style conversational interface, students can pose questions, engage in
             AI-assisted discussions on
             academic topics, reinforce their understanding through quizzes, and prepare for assessments by responding to

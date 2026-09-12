@@ -6,10 +6,12 @@
 
     <p v-else>Loading summary...</p>
 
-    <div class="d-flex gap-2 mt-auto mb-3">
-       <img src="../../../assets/socrates_blink_less.gif" width="25" alt=""> 
-       <router-link to="/python/subtopic/1/summary"> 
-        Start Session 
+    <div class="d-flex gap-2 mt-auto mb-3">        
+       <router-link to="/python/subtopic/1/summary">
+        <button class="btn btn-primary">
+          <img src="../../../assets/socrates_blink_less.gif" width="25" alt="">
+          Start Session 
+        </button>         
       </router-link>   
     </div>
   </div>

@@ -1,6 +1,12 @@
 <template>
   <div class="container summary-container">
-    <h3 class="p-2">{{ topic.title }}</h3>
+    <h3 class="p-2">{{ topic.title }} 
+      <router-link class="btn btn-danger" 
+        id="continueBtn"
+        :to="`/python/subtopic/${route.params.id}/quiz`">
+        Continue to quiz
+      </router-link>
+    </h3>
 
     <div v-if="topic.summary" class="summary-pages my-2">
       <section
@@ -22,6 +28,7 @@
           <strong>You</strong>
           <div>{{ message.query }}</div>
         </div>
+        <img src="../../../assets/socrates_blink_less.gif" width="25" alt="">
         <div class="response p-2" v-html="message.renderedResponse"></div>
       </div>
     </div>
@@ -42,9 +49,7 @@
     <p v-if="errorMessage" class="text-danger mt-2">{{ errorMessage }}</p>
 
     <div class="summary-actions mt-4 mb-3">
-      <router-link class="btn btn-danger" :to="`/python/subtopic/${route.params.id}/quiz`">
-        Continue to quiz
-      </router-link>
+      
     </div>
   </div>
 </template>
@@ -180,5 +185,9 @@ h3 {
 
 input {
   border: 1px dotted;
+}
+
+#continueBtn {
+  float: right;
 }
 </style>

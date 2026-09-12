@@ -149,6 +149,6 @@ function insertIndentation(event) {
 
 <style>
 #codeArea {
-  border: 1px dotted maroon;
+  border: 1px dotted;
 }
 </style>
