@@ -122,7 +122,7 @@ class CodingProblemCreateViewTests(APITestCase):
 			summary='Function fundamentals',
 		)
 
-	@patch('agent.views.create_coding_problems')
+	@patch('app.views.create_coding_problems')
 	def test_creates_and_saves_coding_problems(self, create_coding_problems):
 		created_codes = CodeListSchema(codes=[CodeSchema(
 			problem='Write a greeting function.',
